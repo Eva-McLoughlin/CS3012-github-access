@@ -1,8 +1,8 @@
-#install.packages("jsonlite")
+install.packages("jsonlite")
 library(jsonlite)
-#install.packages("httpuv")
+install.packages("httpuv")
 library(httpuv)
-#install.packages("httr")
+install.packages("httr")
 library(httr)
 
 oauth_endpoints("github")

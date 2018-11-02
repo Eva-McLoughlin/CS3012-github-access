@@ -17,14 +17,18 @@ github_token <- oauth2.0_token(oauth_endpoints("github"), myapp)
 
 # Use API
 gtoken <- config(token = github_token)
-req <- GET("https://api.github.com/users/jtleek/repos", gtoken)
+phadejReq <- GET("https://github.com/phadej/github", gtoken)
+phadejReq
 
 # lines 8-20 sourced from: https://towardsdatascience.com/accessing-data-from-github-api-using-r-3633fb62cb08
 
-stop_for_status(req)
+stop_for_status(phadejReq)
+
+install.packages("xml2")
 
 # Extract content from a request
-json1 = content(req)
+json1 = content(phadejReq)
+json1
 
 # Convert to a data.frame
 gitDF = jsonlite::fromJSON(jsonlite::toJSON(json1))

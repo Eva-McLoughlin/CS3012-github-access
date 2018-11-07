@@ -38,3 +38,26 @@ gitDF[gitDF$full_name == "jtleek/datasharing", "created_at"]
 data <- fromJSON("https://api.github.com/users/Eva-McLoughlin")
 data$followers
 data$public_repos #number of public repositories i have
+
+data$id
+data$url
+data$followers_url
+data$following_url
+data$name
+data$company
+data$following
+data$name
+data$name
+data$created_at
+data$updated_at
+data$bio
+data$email
+data$type
+data$site_admin
+data$public_gists
+data$public_repos
+data$hireable
+data$login
+data$blog
+data$location
+data$repos_url

@@ -68,3 +68,10 @@ repositories$name #names of all public repositories
 repositories$created_at # when various repos were created
 ass1repos <- fromJSON("https://api.github.com/repos/Eva-McLoughlin/software-engineering/commits")
 ass1repos$commit$message #display the messages attached to each commit for this repos
+
+
+# information on followers 
+followers <- fromJSON("https://api.github.com/users/Eva-McLoughlin/followers")
+followers$login #usernames of all followers
+length <- length(followers$login) #number of people who follow me
+length

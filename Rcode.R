@@ -35,6 +35,8 @@ gitDF[gitDF$full_name == "jtleek/datasharing", "created_at"]
 
 #-------------------------------------------------------------------------------------------------
 
+# Extract data from my profile:
+
 data <- fromJSON("https://api.github.com/users/Eva-McLoughlin")
 data$followers
 data$public_repos #number of public repositories i have
@@ -68,7 +70,7 @@ dataT$public_repos
 
 # PROCESSING THE DATA FROM GITHUB
 
-#I am going to gather information about the number of followers cassidke's followers have
+#Gather information about the number of followers cassidke's followers have (again, randomly selected a profile from github)
 
 followersNames <- fromJSON("https://api.github.com/users/cassidke/followers")
 followersNames$login #shown previously, gets the user names of my followers
@@ -81,20 +83,17 @@ c <- "/followers"
 test <- sprintf("%s%s%s", a,b,c) #this method amalgamates a, b and c into one string 
 test                              #called test 
 
+#Now have access to stephenoquigley's followers as he is the user at login[4]
 
-#I now have access to joostmarkerink's followers
-#If I wanted access to karel1980's followers, I woiuld change b to b <- followersNames$login[2] 
-#as she is second in the list.
+# Run this in a loop to access all of cassidke's followers:
 
-#Step 2:
-
-numberOfFollowers <- c() #this creates an empty vector
+numberOfFollowers <- c() 
 namesOfFollowers <- c()
 for (i in 1:length(followersNames$login)) {
-  followers <- followersNames$login[i] #loops through each of my followers, indexed by i
-  jsonLink <- sprintf("%s%s%s", a, followers, c) #creates link for my ith follower
+  followers <- followersNames$login[i] #loops through each of her followers, using i as the index
+  jsonLink <- sprintf("%s%s%s", a, followers, c) #creates link for the ith follower
   followData <- fromJSON(jsonLink) #stores the followers of my ith follower
-  numberOfFollowers[i] = length(followData$login) #amount of followers the ith follower has
+  numberOfFollowers[i] = length(followData$login) #number of followers the ith follower has
   namesOfFollowers[i] = followers #names of all users following the ith follower
   
 }
@@ -104,3 +103,4 @@ finalData <- data.frame(numberOfFollowers, namesOfFollowers) #stores two vectors
 #data frame
 finalData$namesOfFollowers
 finalData$numberOfFollowers
+

@@ -104,3 +104,21 @@ finalData <- data.frame(numberOfFollowers, namesOfFollowers) #stores two vectors
 finalData$namesOfFollowers
 finalData$numberOfFollowers
 
+#-----------------------------------------------------------------------------------------------------
+# VISUALIZATION
+
+#install.packages("devtools")
+#install.packages("Rcpp")
+library(devtools)
+library(Rcpp)
+#install_github('ramnathv/rCharts', force= TRUE)
+require(rCharts)
+
+myPlot <- nPlot(numberOfFollowers ~ namesOfFollowers, data = finalData, type = "multiBarChart")
+myPlot
+
+myPlot$save("myplot.html") #this saves a html file of the plot to my documents. 
+
+#the graph shows that kennyc11 and endam1234 have the most followers out of 
+#cassidke's followers -> they are the most influential developers following her
+

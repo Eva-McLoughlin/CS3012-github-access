@@ -81,7 +81,6 @@ b
 c <- "/followers"
 
 test <- sprintf("%s%s%s", a,b,c) #this method amalgamates a, b and c into one string 
-test                              #called test 
 
 #Now have access to stephenoquigley's followers as he is the user at login[4]
 
@@ -105,6 +104,103 @@ finalData$namesOfFollowers
 finalData$numberOfFollowers
 
 #-----------------------------------------------------------------------------------------------------
+
+# LANGUAGES 
+
+findLanguages <- function(username)
+{
+  i=1
+  x=1
+  languageVector=c()
+  RepoNameVector=c()
+  languageDF = data_frame()
+  while(x!=0)
+  {
+    
+    
+    
+    repositoryDF = GET( paste0("https://api.github.com/users/", username, "/repos?per_page=100&page=", i),myToken)
+    repoContent = content(repositoryDF)
+    x = length(repoContent) 
+    print(x)
+    if (x==0)
+    {
+      break
+    }
+    for ( j in 1:length(repoContent))
+    {
+      repoLanguage=repoContent[[j]]$language
+      if(is.null(repoLanguage))
+      {
+        RepoNameVector[j] = repoContent[[j]]$name
+        languageVector[j] = ""
+      }else
+      {
+        languageVector[j] =repoContent[[j]]$language
+        RepoNameVector[j] = repoContent[[j]]$name
+      }
+    }
+    currentLanguageDF <- data_frame(repo =  RepoNameVector, language = languageVector)
+    languageDF <- rbind(languageDF, currentLanguageDF)
+    
+    i = i+1
+    
+  }
+  
+  return (languageDF)
+}
+#Returns a dataframe with the language used in each of the users repos
+getLanguages <- function(username)
+{
+  
+  reposDF <- GET( paste0("https://api.github.com/users/", username, "/repos?per_page=100"),myToken)
+  repoContent <- content(reposDF)
+  i <- 1
+  languageDF <- data_frame()
+  numberOfRepos <- length(repoContent)
+  for(i in 1:numberOfRepos)
+  {
+    repoLanguage <- repoContent[[i]]$language
+    repoName <- repoContent[[i]]$name
+    if(repoLanguage=="")
+    {
+      currentLanguageDF <- data_frame(repo = repoName, language = "No language specified")
+    }else
+    {
+      currentLanguageDF <- data_frame(repo = repoName, language = repoLanguage)
+    }
+    i <- i+1
+    languageDF <- rbind(languageDF, currentLanguageDF)
+  }
+  return (languageDF)
+}
+
+languages= findLanguages("phadej")
+languages
+languages$repo
+languages$language
+
+l = unique(languages$language)
+n = rep(0, length(unique(languages$language)))
+df <- cbind(l,n)
+
+for(i in 1:length(languages$repo)){
+  
+  lang = languages$language[i]
+  #print(lang)
+  N = df[l ==lang,2]
+  df[l == lang,2] = as.numeric(N)+1
+}
+
+length(languages$repo)
+df[,2] = as.numeric(df[,2])/length(languages$repo)
+l = df[,1]
+n = as.numeric(df[,2])*100
+frame = data.frame(l,n)
+frame
+
+
+#-----------------------------------------------------------------------------------------------------
 # VISUALIZATION
 
 #install.packages("devtools")
@@ -114,11 +210,19 @@ library(Rcpp)
 #install_github('ramnathv/rCharts', force= TRUE)
 require(rCharts)
 
-myPlot <- nPlot(numberOfFollowers ~ namesOfFollowers, data = finalData, type = "multiBarChart")
-myPlot
+plot1 <- nPlot(numberOfFollowers ~ namesOfFollowers, data = finalData, type = "multiBarChart")
+# Other types: pieChart
+plot1
+plot1$save("plot1.html") #this saves a html file of the plot to my documents. 
 
-myPlot$save("myplot.html") #this saves a html file of the plot to my documents. 
-
-#the graph shows that kennyc11 and endam1234 have the most followers out of 
+#Plot 1 shows that kennyc11 and endam1234 have the most followers out of 
 #cassidke's followers -> they are the most influential developers following her
+
+plot2 <- nPlot(n ~ l, data=frame, type="pieChart", main = "Languages")
+plot2
+plot2$save("plot2.html")
+
+# Plot 2 shows the precentage breakdown of languages used in Phadej's repositories.
+
+#-----------------------------------------------------------------------------------------------------
 

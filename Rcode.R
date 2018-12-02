@@ -100,6 +100,7 @@ numberOfFollowers
 namesOfFollowers
 finalData <- data.frame(numberOfFollowers, namesOfFollowers) #stores two vectors as one
 #data frame
+finalData
 finalData$namesOfFollowers
 finalData$numberOfFollowers
 
@@ -199,9 +200,103 @@ n = as.numeric(df[,2])*100
 frame = data.frame(l,n)
 frame
 
+#-----------------------------------------------------------------------------------------------------
+
+# Plotly Graph: followers against following (Using user 'phadej')
+
+userData = GET("https://api.github.com/users/phadej/followers?per_page=100;", gtoken)
+stop_for_status(userData)
+
+# Extract content
+extract = content(userData)
+
+# Convert to dataframe
+githubDB = jsonlite::fromJSON(jsonlite::toJSON(extract))
+
+# Subset dataframe
+githubDB$login
+id = githubDB$login
+user_ids = c(id)
+
+users = c()
+usersDB = data.frame(
+  
+  username = integer(),
+  following = integer(),
+  followers = integer(),
+  repos = integer(),
+  dateCreated = integer()
+  
+)
+
+# Loop through users
+for(i in 1:length(user_ids))
+{
+  #Retrieve a list of individual users 
+  followingURL = paste("https://api.github.com/users/", user_ids[i], "/following", sep = "")
+  followingRequest = GET(followingURL, gtoken)
+  followingContent = content(followingRequest)
+  
+  #Ignore if they have no followers
+  if(length(followingContent) == 0)
+  {
+    next
+  }
+  
+  followingDF = jsonlite::fromJSON(jsonlite::toJSON(followingContent))
+  followingLogin = followingDF$login
+  
+  #Loop through 'following' users
+  for(j in 1:length(followingLogin))
+  {
+    #Check user is not already in the list of users
+    if(is.element(followingLogin[j], users) == FALSE)
+    {
+      #Adding user to list
+      users[length(users) + 1] = followingLogin[j]
+      followingUrl2 = paste("https://api.github.com/users/", followingLogin[j], sep = "")
+      following2 = GET(followingUrl2, gtoken)
+      followingContent2 = content(following2)
+      followingDF2 = jsonlite::fromJSON(jsonlite::toJSON(followingContent2))
+      
+
+      followingNumber = followingDF2$following
+      followersNumber = followingDF2$followers
+      reposNumber = followingDF2$public_repos
+      yearCreated = substr(followingDF2$created_at, start = 1, stop = 4)
+      usersDB[nrow(usersDB) + 1, ] = c(followingLogin[j], followingNumber, followersNumber, reposNumber, yearCreated)
+      
+    }
+    next
+  }
+  #Stop when there are more than 200 users
+  if(length(users) > 200)
+  {
+    break
+  }
+  next
+}
+#install.packages("plotly")
+library(plotly)
+
+#Link R to plotly
+Sys.setenv("plotly_username"="evamcloughlin")
+Sys.setenv("plotly_api_key"="G44v1CT6aHRMInvUpzJE")
+
+plot = plot_ly(data = usersDB, x = ~following, y = ~followers, 
+               text = ~paste("Followers: ", followers, "<br>Following: ", 
+                             following))
+plot
+
+#Upload the plot to Plotly
+Sys.setenv("plotly_username"="evamcloughlin")
+Sys.setenv("plotly_api_key"="G44v1CT6aHRMInvUpzJE")
+api_create(plot2, filename = "Followers vs Following")
+# URL: https://plot.ly/~evamcloughlin/3/
+
 
 #-----------------------------------------------------------------------------------------------------
-# VISUALIZATION
+# VISUALIZATION -> not using Plot.ly
 
 #install.packages("devtools")
 #install.packages("Rcpp")
@@ -211,8 +306,8 @@ library(Rcpp)
 require(rCharts)
 
 plot1 <- nPlot(numberOfFollowers ~ namesOfFollowers, data = finalData, type = "multiBarChart")
-# Other types: pieChart
 plot1
+# Other types: pieChart
 plot1$save("plot1.html") #this saves a html file of the plot to my documents. 
 
 #Plot 1 shows that kennyc11 and endam1234 have the most followers out of 
@@ -222,7 +317,7 @@ plot2 <- nPlot(n ~ l, data=frame, type="pieChart", main = "Languages")
 plot2
 plot2$save("plot2.html")
 
-# Plot 2 shows the precentage breakdown of languages used in Phadej's repositories.
+# Plot 2 shows the percentage breakdown of languages used in Phadej's repositories.
 
 #-----------------------------------------------------------------------------------------------------
 

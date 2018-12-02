@@ -200,6 +200,8 @@ n = as.numeric(df[,2])*100
 frame = data.frame(l,n)
 frame
 
+
+
 #-----------------------------------------------------------------------------------------------------
 
 # Plotly Graph: followers against following (Using user 'phadej')

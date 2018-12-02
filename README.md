@@ -7,6 +7,7 @@ CS3012 Assignment
 
 
 PLOTS:
+(Screenshots of interactive graphs 1 and 2 are uploaded as files in this repo).
 
 plot1 -> A barchart of how many followers each of cassidke follower's has. Gives an insight into which of her follower's are the most influential.
 
